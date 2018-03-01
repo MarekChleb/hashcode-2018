@@ -3,17 +3,24 @@
 #include <iostream>
 #include <set>
 #include <array>
+#include <vector>
 
 using namespace std;
 
 int R, C, F, N, B, T;
 const int DEBUG = 1;
+int index = 0;
 
 typedef struct tup {
-    int a, b, x, y, real_s, f, distance, late_s, good_s;
+    int a, b, x, y, real_s, f, distance, late_s, good_s, index;
 } tup;
 
-set<array<int, 9>> tups;
+set<array<int, 9>> tups_s;
+vector<array<int, 9>> tups_v;
+set<array<int, 2>> starts;
+set<array<int, 5>> vehicles;
+array<int, 10000> done;
+int done_count = 0;
 
 void add_tuple(int a, int b, int x, int y, int s, int f) {
     array<int, 9> tupi;
@@ -23,7 +30,8 @@ void add_tuple(int a, int b, int x, int y, int s, int f) {
     tupi[3] = y;
     tupi[4] = s;
     tupi[5] = f;
-    tups.insert(tupi);
+    tups_s.insert(tupi);
+    tups_v.push_back(tupi);
 }
 
 void parse() {
@@ -37,7 +45,7 @@ void parse() {
         add_tuple(a, b, x, y, s, f);
     }
     if (DEBUG) {
-        for (set<array<int, 9>>::iterator it = tups.begin(); it != tups.end(); it++) {
+        for (set<array<int, 9>>::iterator it = tups_s.begin(); it != tups_s.end(); it++) {
             for (int i = 0; i < 6; ++i) {
                 cout << (*it)[i] << " ";
             }
@@ -46,7 +54,14 @@ void parse() {
     }
 }
 
+void create_vehicles() {
+    for (int i = 0; i < F; ++i) {
+        vehicles.insert({0, 0, 0, 0, 0});
+    }
+}
+
 int main() {
     parse();
+    create_vehicles();
     return 0;
 }
