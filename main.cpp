@@ -75,7 +75,7 @@ void parse() {
 
 void create_vehicles() {
     for (int i = 0; i < F; ++i) {
-        vehicles.insert({0, 0, 0, i});
+        vehicles.insert({0, i, 0, 0});
     }
 }
 
@@ -85,7 +85,7 @@ bool isok(set<array<int, 4>>::iterator veh, vector<array<int, 9>>::iterator req,
     }
     *x = (*req)[2];
     *y = (*req)[3];
-    int dojazd = dist((*veh)[1], (*veh)[2], (*req)[0], (*req)[1]);
+    int dojazd = dist((*veh)[2], (*veh)[3], (*req)[0], (*req)[1]);
     int pkty = (*req)[6];
     int bonus = 0;
     if ((*veh)[0] + dojazd <= (*req)[4]) {
@@ -94,27 +94,29 @@ bool isok(set<array<int, 4>>::iterator veh, vector<array<int, 9>>::iterator req,
     } else {
         *when = (*veh)[0] + dojazd + (*req)[6];
     }
-    *koszt = pkty - dojazd + bonus;
+    *koszt = bonus;
     return *when < (*req)[5];
 }
 
 void assign_starts() {
     set<array<int, 4>>::iterator veh = vehicles.begin();
-    int v = (*veh)[3];
+    int v = (*veh)[1];
     if (done[v]) {
         vehicles.erase(vehicles.begin());
         return;
     }
     int start = -1;
-    int max = -100000, koszt = 0;
+    int max = T, koszt = 0;
     int temp, when = 0, best_when = 0;
     int x, best_x;
     int y, best_y;
+    int k = 0;
     vector<array<int, 9>>::iterator best_it;
     for (vector<array<int, 9>>::iterator it = tups_v.begin(); it != tups_v.end(); it++) {
         if (isok(veh, it, &when, &x, &y, &koszt)) {
-            if (koszt > max) {
-                max = koszt;
+            if (when + k < max + koszt) {
+                max = when;
+                k = koszt;
                 start = (*it)[7];
                 best_when = when;
                 best_x = x;
@@ -127,7 +129,7 @@ void assign_starts() {
     if (start != -1) {
         vehicles_starts[v].push_back(start);
         (*best_it)[8] = 1;
-        vehicles.insert({best_when, best_x, best_y, v});
+        vehicles.insert({best_when, v, best_x, best_y});
     }
 }
 
